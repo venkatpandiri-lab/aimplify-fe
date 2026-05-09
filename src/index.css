@@ -1,0 +1,23 @@
+/* Prevent long production strings (Mongo/API) from blowing out layout vs shorter local data. */
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Asset detail: main + sidebar; minmax(0,1fr) lets the main column shrink inside CSS Grid. */
+.dv-layout {
+  display: grid;
+  gap: 32px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+}
+
+@media (max-width: 900px) {
+  .dv-layout {
+    grid-template-columns: 1fr;
+  }
+}
