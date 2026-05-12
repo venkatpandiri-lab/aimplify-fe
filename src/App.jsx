@@ -314,9 +314,20 @@ function SubmitView({ goBack, setSubs, onDone, onSubmitAsset }) { const [nm, set
 }
 
 function ImageLightbox({ src, onClose }) {
+  useEffect(() => {
+    window.history.pushState({ lightbox: true }, "");
+    const handlePop = () => onClose();
+    window.addEventListener("popstate", handlePop);
+    return () => {
+      window.removeEventListener("popstate", handlePop);
+    };
+  }, [onClose]);
+
+  const handleClose = () => { window.history.back(); };
+
   return (
     <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(0,0,0,0.92)" }}>
-      <button onClick={onClose} style={{ position: "absolute", top: 16, right: 20, background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", fontSize: 24, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10001 }}>×</button>
+      <button onClick={handleClose} style={{ position: "absolute", top: 16, right: 20, background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", fontSize: 24, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10001 }}>×</button>
       <iframe
         src={src}
         title="Image Full View"
