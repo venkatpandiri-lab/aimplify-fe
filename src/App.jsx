@@ -313,8 +313,23 @@ function SubmitView({ goBack, setSubs, onDone, onSubmitAsset }) { const [nm, set
         <button onClick={doS} disabled={!nm.trim() || !ds.trim()} style={{ padding: "11px 26px", borderRadius: 8, border: "none", background: (!nm.trim() || !ds.trim()) ? "#7DD3FC" : "#0EA5E9", color: "#fff", fontSize: 13, fontWeight: 600, fontFamily: "inherit", alignSelf: "flex-start", cursor: (!nm.trim() || !ds.trim()) ? "default" : "pointer" }}>Submit for Review</button></div></div></div>;
 }
 
+function ImageLightbox({ src, onClose }) {
+  return (
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(0,0,0,0.92)" }}>
+      <button onClick={onClose} style={{ position: "absolute", top: 16, right: 20, background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", fontSize: 24, cursor: "pointer", fontFamily: "inherit", lineHeight: 1, width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10001 }}>×</button>
+      <iframe
+        src={src}
+        title="Image Full View"
+        frameBorder="0"
+        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+      />
+    </div>
+  );
+}
+
 function MediaSection({ a, familyColor }) {
   const [embedFailed, setEmbedFailed] = useState(false);
+  const [lightbox, setLightbox] = useState(false);
   const mediaType = a.mediaType || "none";
   const embedUrl = a.mediaUrl || "";
   const streamUrl = a.streamUrl || "";
@@ -331,8 +346,29 @@ function MediaSection({ a, familyColor }) {
     );
   }
 
-  if (mediaType === "video" || mediaType === "image") {
-    const iframeSrc = embedFailed && streamUrl ? streamUrl : embedUrl;
+  const iframeSrc = embedFailed && streamUrl ? streamUrl : embedUrl;
+
+  if (mediaType === "image") {
+    return (
+      <>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div onClick={() => setLightbox(true)} style={{ width: 580, height: 370, overflow: "hidden", position: "relative", cursor: "pointer" }}>
+            <iframe
+              key={iframeSrc}
+              src={iframeSrc}
+              title="Image Preview"
+              frameBorder="0"
+              onError={() => { if (!embedFailed) setEmbedFailed(true); }}
+              style={{ width: "100%", height: "calc(100% + 48px)", marginTop: -48, border: "none", display: "block", pointerEvents: "none" }}
+            />
+          </div>
+        </div>
+        {lightbox && <ImageLightbox src={iframeSrc} onClose={() => setLightbox(false)} />}
+      </>
+    );
+  }
+
+  if (mediaType === "video") {
     return (
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div style={{ width: 580, height: 370, borderRadius: 10, overflow: "hidden", border: "1px solid #E5E7EB", boxShadow: "0 2px 12px rgba(0,0,0,0.08)", position: "relative" }}>
